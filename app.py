@@ -9,6 +9,7 @@ logging.basicConfig(level = logging.INFO)
 def ensure_start_conditions(function):
     """
     Decorator function to ensure that there is no more and no less that one function argument which has no value.
+    Returns False if the arguments are incorrect.
     """
 
     def wrapper(**kwargs):
@@ -45,7 +46,7 @@ def poisson_probability(mean = None, success_number = None, probability = None):
                          f"""is currently a {type(arguments[arg])}.""")
             return False
 
-    # Function changes depending on which argument is missing.
+    # Calculation changes depending on which argument is missing.
     match missing_arg:
 
         case "mean":
@@ -68,9 +69,14 @@ app = Flask(__name__)
 api = Api(app)
 
 class PoissonDistribution(Resource):
+    """
+    API resource class to set up a get request for returning requests involving
+    Poisson distribution calculations.
+    """
 
     def get(self, mean, successes, probability):
 
+        # Checks the input arguments to ensure they're compatible.
         arguments = signature(PoissonDistribution.get).parameters
         for arg in arguments:
             arg_name = arguments[arg].name
@@ -82,16 +88,21 @@ class PoissonDistribution(Resource):
                 if value == "None":
                     continue
 
-                match arg_name:
-                    
-                    case "mean":
-                        mean = float(mean)
-                    
-                    case "probability":
-                        probability = float(probability)
+                # Tries converting the arguments to their appropriate datatypes.
+                try:
+                    match arg_name:
+                        
+                        case "mean":
+                            mean = float(mean)
 
-                    case "successes":
-                        successes = int(successes)
+                        case "probability":
+                            probability = float(probability)
+
+                        case "successes":
+                            successes = int(successes)
+
+                except ValueError:
+                    pass
                 
                 
 
