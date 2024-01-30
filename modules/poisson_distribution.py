@@ -1,7 +1,45 @@
 import math
 
-def poisson_find_mean():
-    pass
+def poisson_find_mean(success_number, probability):
+    """
+    Uses the Poisson distribution to estimate possible values of the mean given the number of successes and
+    the probability of that success number. This returns a high and a low value as it isn't known which side of
+    the mean the number of successes is.
+    """
+
+    step_size = 1
+    target_value = probability * math.factorial(success_number)
+    closest_target_distance = None
+    temp_mean_value = success_number
+
+    # Runs through mean values, decreasing step size when close until max resolution is reached
+    while True:
+        estimate = math.exp(-temp_mean_value) * (temp_mean_value ** success_number)
+        estimate_to_target_distance = abs(estimate - target_value)
+
+        # Either increases the mean value if getting closer to the value or changes step and tracks back
+        if closest_target_distance == None or estimate_to_target_distance < closest_target_distance:
+            closest_target_distance = estimate_to_target_distance
+        elif step_size == 0.01:
+            temp_mean_value -= step_size
+            break
+        else:
+            temp_mean_value -= step_size
+            step_size /= 10
+
+        temp_mean_value += step_size
+
+    # The mean could either be above or below the success no so there are two possible values
+    higher_mean_value = temp_mean_value
+    lower_mean_value = (2 * success_number) - temp_mean_value
+    
+    # Both values of the mean are only returned if they're both over zero
+    if lower_mean_value < 0:
+        mean = [higher_mean_value]
+    else:
+        mean = [higher_mean_value, lower_mean_value]
+
+    return mean
 
 
 def poisson_find_successes(mean, probability):

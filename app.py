@@ -1,9 +1,8 @@
-import math
 import logging
-from inspect import signature, getfullargspec
+from inspect import signature
 from flask import Flask, jsonify, request
 from flask_restful import Resource, Api
-from modules.poisson_distribution import poisson_find_successes, poisson_find_probability
+from modules.poisson_distribution import poisson_find_mean, poisson_find_successes, poisson_find_probability
 
 logging.basicConfig(level = logging.INFO)
 
@@ -23,12 +22,6 @@ def ensure_start_conditions(function):
         return function(**kwargs)
 
     return wrapper
-
-def poisson_find_probability():
-    pass
-
-def poisson_find_mean():
-    pass
 
 @ensure_start_conditions
 def poisson_probability(mean = None, success_number = None, probability = None):
@@ -57,35 +50,19 @@ def poisson_probability(mean = None, success_number = None, probability = None):
 
         case "mean":
             success_number = int(success_number)
-            print("mean")
-
+            mean = poisson_find_mean(success_number, probability)
+            
         case "success_number":
-
             success_number = poisson_find_successes(mean, probability)
 
         case "probability":
-
             success_number = int(success_number)
             probability = poisson_find_probability(mean, success_number)
 
     return {"mean": mean, "success_number": success_number, "probability": probability}
-    """
-    for argument in signature(poisson_probability).parameters:
-        print(argument)
 
-    print(signature(poisson_probability).parameters)
 
-    for i in signature(poisson_probability).parameters:
-        print(signature(poisson_probability).parameters[i].name)
-        print(signature(poisson_probability).parameters[i].annotation)
 
-    print(getfullargspec(poisson_probability))
-
-    #print(signature(poisson_probability).parameters)
-    #print(argument for argument in signature(poisson_probability).parameters.keys)
-    """
-
-"""
 app = Flask(__name__)
 
 api = Api(app)
@@ -98,7 +75,3 @@ class PoissonDistribution(Resource):
 
 if __name__ == "__main__":
     app.run(debug = False)
-
-"""
-
-print(poisson_probability(mean = 5.2, probability = 0.15))
