@@ -69,9 +69,33 @@ api = Api(app)
 
 class PoissonDistribution(Resource):
 
-    def get(self):
-        pass
+    def get(self, mean, successes, probability):
 
+        arguments = signature(PoissonDistribution.get).parameters
+        for arg in arguments:
+            arg_name = arguments[arg].name
+
+            if arg_name in locals() and arg_name != "self":
+                print(f"{arg_name} - {locals()[arg_name]}")
+                value = locals()[arg_name]
+
+                if value == "None":
+                    continue
+
+                match arg_name:
+                    
+                    case "mean":
+                        mean = float(mean)
+                    
+                    case "probability":
+                        probability = float(probability)
+
+                    case "successes":
+                        successes = int(successes)
+                
+                
+
+api.add_resource(PoissonDistribution, '/Poisson/mean=<string:mean>/successes=<string:successes>/probability=<string:probability>')
 
 if __name__ == "__main__":
     app.run(debug = False)
