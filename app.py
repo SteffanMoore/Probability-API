@@ -82,13 +82,12 @@ class PoissonDistribution(Resource):
             arg_name = arguments[arg].name
 
             if arg_name in locals() and arg_name != "self":
-                print(f"{arg_name} - {locals()[arg_name]}")
                 value = locals()[arg_name]
 
                 if value == "None":
                     continue
 
-                # Tries converting the arguments to their appropriate datatypes.
+                # Tries converting the arguments to appropriate datatypes returning client error if not possible.
                 try:
                     match arg_name:
                         
@@ -102,7 +101,15 @@ class PoissonDistribution(Resource):
                             successes = int(successes)
 
                 except ValueError:
-                    pass
+                    return '', 400
+                
+        # Once input arguments confirmed, function is called and returned if successful
+        result = poisson_probability(mean = mean, success_number = successes, probability = probability)
+
+        if result == False:
+            return '', 400
+        else:
+            return jsonify(result), 200
                 
                 
 
