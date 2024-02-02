@@ -5,6 +5,6 @@ Having used APIs in a few previous projects, I thought it was about time that I 
 ## Functionality
 The Poisson distribution is used for discrete data and requires the expected value (mean) and actual number of successes to find a probability. However I didn't want the API to only be able to calculate probabilities. I wanted it to be able to return the mean given the probability and success number as well as return the success number given the probability and mean. The problem with this is that the equation for finding the probability is very nice and straightforward:
 
-$$ P = {{\lambda}^k * e^{-\lambda}} / k! $$
+$$ P = {{\lambda}^k e^{-\lambda}} / k! $$
 
 The equations for finding the mean and success number however aren't as nice and clean.
