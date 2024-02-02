@@ -74,8 +74,10 @@ class PoissonDistribution(Resource):
     Poisson distribution calculations.
     """
 
-    def get(self, mean, successes, probability):
+    def get(self, mean = None, successes = None, probability = None):
 
+        parameter_to_calculate = None
+        
         # Checks the input arguments to ensure they're compatible.
         arguments = signature(PoissonDistribution.get).parameters
         for arg in arguments:
@@ -85,9 +87,10 @@ class PoissonDistribution(Resource):
                 value = locals()[arg_name]
 
                 if value == "None":
+                    parameter_to_calculate = arg_name
                     continue
 
-                # Tries converting the arguments to appropriate datatypes returning client error if not possible.
+                # Tries converting the arguments to appropriate datatypes.
                 try:
                     match arg_name:
                         
@@ -101,15 +104,27 @@ class PoissonDistribution(Resource):
                             successes = int(successes)
 
                 except ValueError:
-                    return '', 400
+                    return 'Invalid data types provided by user.', 400
                 
         # Once input arguments confirmed, function is called and returned if successful
-        result = poisson_probability(mean = mean, success_number = successes, probability = probability)
+        match parameter_to_calculate:
+            
+            case "mean":
+                result = poisson_probability(success_number = successes, probability = probability)
 
+            case "probability":
+                result = poisson_probability(mean = mean, success_number = successes)
+
+            case "successes":
+                result = poisson_probability(mean = mean, probability = probability)
+
+            case _:
+                result = poisson_probability(mean = mean, success_number = successes, probability = probability)
+        
         if result == False:
-            return '', 400
+            return 'Incorrect number of arguments provided.', 400
         else:
-            return jsonify(result), 200
+            return jsonify(result)
                 
                 
 
